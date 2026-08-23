@@ -1,0 +1,491 @@
+<title>法人営業AIエージェント・ラボ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --ground:#F7F8FA; --surface:#FFFFFF; --panel:#EEF1F5; --panel-2:#E4E9EF;
+    --ink:#151A21; --muted:#5A6472; --faint:#8A93A0; --border:#D7DDE5; --border-strong:#C2CAD4;
+    --accent:#D2422A; --accent-soft:#FBEAE5;
+    --gov:#1F7A6B; --gov-soft:#E1F0EC;
+    --rival:#3E6EA5; --rival-soft:#E7EEF6;
+    --shadow:0 1px 2px rgba(21,26,33,.05),0 8px 24px -12px rgba(21,26,33,.12);
+    --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --disp:'Zen Kaku Gothic New','Noto Sans JP',system-ui,sans-serif;
+    --body:'Noto Sans JP',system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#14171C; --surface:#1C2027; --panel:#232832; --panel-2:#2B313C;
+      --ink:#ECE7DE; --muted:#9AA4B1; --faint:#6E7885; --border:#2E343F; --border-strong:#3B434F;
+      --accent:#EF6B50; --accent-soft:#39221D;
+      --gov:#48C1AA; --gov-soft:#173029;
+      --rival:#77A6D8; --rival-soft:#1A2733;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#14171C; --surface:#1C2027; --panel:#232832; --panel-2:#2B313C;
+    --ink:#ECE7DE; --muted:#9AA4B1; --faint:#6E7885; --border:#2E343F; --border-strong:#3B434F;
+    --accent:#EF6B50; --accent-soft:#39221D;
+    --gov:#48C1AA; --gov-soft:#173029;
+    --rival:#77A6D8; --rival-soft:#1A2733;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--ground);color:var(--ink);
+    font-family:var(--body);font-size:16px;line-height:1.7;
+    font-feature-settings:"palt" 1;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h1,h2,h3{font-family:var(--disp);text-wrap:balance;margin:0;letter-spacing:.01em}
+  .mono{font-family:var(--mono)}
+
+  /* ---------- header ---------- */
+  header{padding:56px 0 30px;border-bottom:1px solid var(--border)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  h1{font-size:clamp(30px,5vw,50px);font-weight:900;line-height:1.12;margin:14px 0 8px}
+  .lede{font-size:clamp(16px,2.2vw,19px);color:var(--muted);max-width:64ch;margin:0}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .chip{display:inline-flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);
+    border-radius:999px;padding:6px 13px;font-size:13px;color:var(--ink);box-shadow:var(--shadow)}
+  .chip b{font-family:var(--mono);font-weight:600;color:var(--muted);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+
+  /* ---------- generic section ---------- */
+  section{padding:40px 0}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-bottom:10px}
+  h2{font-size:clamp(21px,3vw,27px);font-weight:700;margin-bottom:14px}
+  p{margin:0 0 14px}
+
+  /* ---------- framing band ---------- */
+  .frame{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  .frame-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border)}
+  .frame-cell{background:var(--surface);padding:22px 20px}
+  .frame-cell .n{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.1em}
+  .frame-cell h3{font-size:16px;font-weight:700;margin:8px 0 6px}
+  .frame-cell p{font-size:14px;color:var(--muted);margin:0}
+  .frame-cell.is-rival{border-top:3px solid var(--rival)}
+  .frame-cell.is-accent{border-top:3px solid var(--accent)}
+  .frame-cell.is-gov{border-top:3px solid var(--gov)}
+  .thesis{margin-top:20px;padding:20px 22px;background:var(--accent-soft);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:12px}
+  .thesis p{margin:0;font-size:15.5px}
+  .thesis b{color:var(--accent)}
+
+  /* ---------- agenda rail ---------- */
+  .agenda{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:8px}
+  .ag{display:flex;flex-direction:column;gap:4px;padding:12px 10px;background:var(--surface);border:1px solid var(--border);border-radius:11px;text-decoration:none;color:var(--ink)}
+  .ag:hover{border-color:var(--accent);text-decoration:none}
+  .ag .step{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:600}
+  .ag .t{font-size:12.5px;font-weight:700;line-height:1.35}
+  .ag .min{font-family:var(--mono);font-size:11px;color:var(--faint)}
+
+  /* ---------- step cards ---------- */
+  .step-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);
+    overflow:hidden;margin-bottom:22px;scroll-margin-top:20px}
+  .step-head{display:flex;align-items:flex-start;gap:16px;padding:22px 24px 18px;border-bottom:1px solid var(--border);background:linear-gradient(0deg,transparent,var(--panel) 260%)}
+  .step-num{flex:none;width:46px;height:46px;border-radius:12px;background:var(--ink);color:var(--ground);
+    font-family:var(--mono);font-weight:600;font-size:19px;display:flex;align-items:center;justify-content:center}
+  .step-head .h{flex:1;min-width:0}
+  .step-head h3{font-size:20px;font-weight:700;line-height:1.25}
+  .step-head .sub{font-size:13.5px;color:var(--muted);margin-top:3px}
+  .time-badge{flex:none;font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--panel);
+    border:1px solid var(--border);border-radius:8px;padding:5px 10px;white-space:nowrap}
+  .step-body{padding:20px 24px 24px;display:flex;flex-direction:column;gap:18px}
+  .field{display:grid;grid-template-columns:112px 1fr;gap:16px;align-items:start}
+  .field .label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:600;padding-top:3px}
+  .field .val{min-width:0}
+  .field .val p{margin:0 0 8px}
+  .field .val p:last-child{margin-bottom:0}
+  .field ol,.field ul{margin:0;padding-left:20px}
+  .field li{margin-bottom:6px}
+  .field li:last-child{margin-bottom:0}
+
+  .ask{background:var(--panel);border:1px solid var(--border-strong);border-radius:10px;padding:13px 15px;
+    font-family:var(--mono);font-size:13.5px;line-height:1.6;color:var(--ink);position:relative}
+  .ask::before{content:"質問";position:absolute;top:-9px;left:12px;background:var(--accent);color:#fff;
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;padding:2px 8px;border-radius:5px}
+  .ask + .ask{margin-top:12px}
+
+  .out{border:1px solid var(--border);border-radius:10px;padding:14px 16px;background:var(--gov-soft)}
+  .out.bad{background:var(--rival-soft)}
+  .out .tag{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px;display:inline-block}
+  .out.good .tag{color:var(--gov)}
+  .out.bad .tag{color:var(--rival)}
+  .out p{font-size:14px;margin:0 0 6px}
+  .out p:last-child{margin:0}
+  .ba{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .talk{background:var(--accent-soft);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:14px 16px}
+  .talk .tag{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:6px}
+  .talk p{font-size:14.5px;margin:0}
+  .wins{display:flex;flex-wrap:wrap;gap:6px}
+  .win{font-family:var(--mono);font-size:11.5px;background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:3px 9px;color:var(--muted)}
+  .win b{color:var(--accent)}
+
+  /* ---------- prep + tables ---------- */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:24px}
+  .table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:12px}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:560px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);font-weight:600;background:var(--panel)}
+  tr:last-child td{border-bottom:none}
+  td .mono,.kv .mono{font-size:12.5px}
+  .kv{display:grid;grid-template-columns:170px 1fr;gap:2px 18px}
+  .kv dt{font-family:var(--mono);font-size:12px;color:var(--muted);padding:7px 0;border-bottom:1px solid var(--border)}
+  .kv dd{margin:0;padding:7px 0;border-bottom:1px solid var(--border);font-size:14px;word-break:break-all}
+  .kv dt:last-of-type,.kv dd:last-of-type{border-bottom:none}
+  .note{background:var(--panel);border:1px dashed var(--border-strong);border-radius:10px;padding:14px 16px;font-size:13.5px;color:var(--muted)}
+  .note b{color:var(--ink)}
+  .pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:5px;font-weight:600}
+  .pill.beta{background:var(--rival-soft);color:var(--rival)}
+  .pill.ok{background:var(--gov-soft);color:var(--gov)}
+
+  footer{border-top:1px solid var(--border);padding:30px 0 60px;color:var(--faint);font-size:13px}
+
+  /* theme toggle */
+  .toggle{position:fixed;top:16px;right:16px;z-index:9;background:var(--surface);border:1px solid var(--border);
+    color:var(--muted);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px;box-shadow:var(--shadow)}
+  .toggle:hover{color:var(--accent);border-color:var(--accent)}
+
+  @media (max-width:760px){
+    .frame-grid{grid-template-columns:1fr}
+    .agenda{grid-template-columns:repeat(2,1fr)}
+    .field{grid-template-columns:1fr;gap:6px}
+    .field .label{padding-top:0}
+    .ba{grid-template-columns:1fr}
+    .kv{grid-template-columns:1fr}
+    .kv dt{border-bottom:none;padding-bottom:0}
+    .kv dd{padding-top:2px}
+    .step-head{flex-wrap:wrap}
+  }
+  @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+  html{scroll-behavior:smooth}
+</style>
+
+<button class="toggle" id="tt" aria-label="配色を切り替え">◐</button>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">営業AIエージェント ハンズオン ／ Databricks × 法人営業</div>
+    <h1>精度の、その先へ。<br>法人営業AIエージェント・ラボ</h1>
+    <p class="lede">「出力精度①〜⑤」だけを測るPoCは、なぜ不完全なのか——。ビジネスユーザーが30分・ノーコードで、<b>精度の天井を決めるContext(用語・関係)</b>、<b>統制</b>、<b>本番化</b>を手を動かして体感するファシリテーター台本。</p>
+    <div class="meta">
+      <span class="chip"><b>対象</b>ビジネスユーザー（営業・企画）</span>
+      <span class="chip"><b>所要</b>約30分</span>
+      <span class="chip"><b>形式</b>UI操作のみ・コード記述なし</span>
+      <span class="chip"><b>題材</b>法人営業（企業向け提案）</span>
+      <span class="chip"><b>環境</b>Databricks / jp-fsi</span>
+    </div>
+  </div>
+</header>
+
+<section id="aim">
+  <div class="wrap">
+    <div class="kicker">このハンズオンの狙い</div>
+    <h2>「相手の土俵」から、論点を動かす</h2>
+    <p>他社提案の営業AI PoCは、営業プロセス <span class="mono">①ターゲティング ②企業分析 ③課題抽出 ④商談準備 ⑤提案書</span> の<strong>出力精度</strong>を測ることに主眼を置いています。しかし精度の天井を決めるのは、モデルではなく<strong>企業文脈（Context）</strong>です。今日は、同じ質問でもContextの有無で答えが変わることを体感し、統制と本番化まで含めて「測るべきこと」を明らかにします。</p>
+    <div class="frame">
+      <div class="frame-grid">
+        <div class="frame-cell is-rival">
+          <div class="n">相手の土俵</div>
+          <h3>精度①〜⑤</h3>
+          <p>プロセスごとの出力精度・事実誤認率。モデル勝負に閉じてしまい、精度の天井そのものは動かない。</p>
+        </div>
+        <div class="frame-cell is-accent">
+          <div class="n">動かす論点 ①</div>
+          <h3>Context＝精度の天井</h3>
+          <p>用語の一貫性（Unity Catalog Pages）と、エンティティの関係（Ontology）。ここが整って初めて精度が上がる。</p>
+        </div>
+        <div class="frame-cell is-gov">
+          <div class="n">動かす論点 ②</div>
+          <h3>統制と本番化</h3>
+          <p>Unity AI Gatewayによる統制・コスト、Agent Bricksによる本番運用。PoCで測らなければ片手落ち。</p>
+        </div>
+      </div>
+      <div style="padding:20px 22px 22px">
+        <div class="thesis"><p>今日の主張 —— <b>「精度の天井を決めるContext層と、本番運用を測らないPoCは不完全。」</b> 精度は入口であって、勝敗を分けるのはその先の Context・統制・本番化である。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="agenda">
+  <div class="wrap">
+    <div class="kicker">30分のながれ</div>
+    <h2>アジェンダ</h2>
+    <div class="agenda">
+      <a class="ag" href="#s0"><span class="step">STEP 0</span><span class="t">導入・シナリオ</span><span class="min">2分</span></a>
+      <a class="ag" href="#s1"><span class="step">STEP 1</span><span class="t">データ発見<br>Genie One</span><span class="min">4分</span></a>
+      <a class="ag" href="#s2"><span class="step">STEP 2</span><span class="t">用語<br>Pages</span><span class="min">6分</span></a>
+      <a class="ag" href="#s3"><span class="step">STEP 3</span><span class="t">キュレーション<br>Genie Agent</span><span class="min">5分</span></a>
+      <a class="ag" href="#s4"><span class="step">STEP 4</span><span class="t">関係<br>Ontology</span><span class="min">6分</span></a>
+      <a class="ag" href="#s5"><span class="step">STEP 5</span><span class="t">提案生成<br>Agent Bricks</span><span class="min">5分</span></a>
+      <a class="ag" href="#s6"><span class="step">STEP 6</span><span class="t">統制・総括<br>AI Gateway</span><span class="min">2分</span></a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+
+    <!-- STEP 0 -->
+    <div class="step-card" id="s0">
+      <div class="step-head">
+        <div class="step-num">0</div>
+        <div class="h"><h3>導入・シナリオ設定</h3><div class="sub">今日あなたが担う「営業担当者」の役割を共有する</div></div>
+        <div class="time-badge">0:00 → 2:00</div>
+      </div>
+      <div class="step-body">
+        <div class="field"><div class="label">目的</div><div class="val"><p>ハンズオンの主人公＝<strong>法人営業の担当者</strong>になりきる。今日のゴールは、担当エリアの企業を分析し、最適な法人ソリューション（団体保険・企業年金・GLTD・経営者保険）を提案すること。</p></div></div>
+        <div class="field"><div class="label">語りかけ</div><div class="val"><p>「あなたは法人営業の担当者です。数百社を担当し、どの企業に・何を・どう提案するかを日々考えています。これはまさに他社PoCの <span class="mono">③課題抽出</span> と <span class="mono">⑤提案書作成</span> の世界。今日はその作業を、AIエージェントと一緒にやってみましょう。」</p></div></div>
+        <div class="field"><div class="label">勝ち筋</div><div class="val"><div class="wins"><span class="win"><b>論点</b> 相手の土俵①〜⑤を、担当者目線の実務に翻訳</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- STEP 1 -->
+    <div class="step-card" id="s1">
+      <div class="step-head">
+        <div class="step-num">1</div>
+        <div class="h"><h3>データ発見 — 「どこに、何がある?」</h3><div class="sub">Genie One（データディスカバリ）で、使えるデータを自然言語で探す</div></div>
+        <div class="time-badge">2:00 → 6:00</div>
+      </div>
+      <div class="step-body">
+        <div class="field"><div class="label">目的</div><div class="val"><p>営業の最初のつまずきは「そもそもどこに何のデータがあるか分からない」。カタログを自然言語で横断検索し、法人営業に使える資産を自力で見つける体験をする。</p></div></div>
+        <div class="field"><div class="label">操作</div><div class="val"><ol>
+          <li>画面上部の <strong>Genie（One）</strong> または <strong>Catalog Explorer の検索</strong> を開く。</li>
+          <li>下の質問を入力し、ヒットした資産を確認する。</li>
+          <li><span class="mono">jp_fsi_catalog.houjin_eigyo</span> に、契約・企業・商談・用語集・KPIが揃っていることを見せる。</li>
+        </ol></div></div>
+        <div class="field"><div class="label">質問</div><div class="val">
+          <div class="ask">法人営業の契約実績や商談履歴に使えるデータはどこにありますか?</div>
+        </div></div>
+        <div class="field"><div class="label">期待</div><div class="val"><div class="out good"><span class="tag">結果</span><p>法人契約（houjin_keiyaku）・担当企業（tantou_kigyo）・商談履歴（shodan_katsudo）・社内用語集（shanai_ryakugo）・企業360ビュー・KPIメトリックビューが、説明つきで発見される。</p></div></div></div>
+        <div class="field"><div class="label">話すこと</div><div class="val"><div class="talk"><span class="tag">勝ち筋トーク</span><p>「SaaSを積み上げるのではなく、データ・文脈・ガバナンスが1つの基盤に集約されているから、業務ユーザーが自力でデータへ到達できます。これは個別最適では出せない全体最適の入口です。」</p></div></div></div>
+        <div class="field"><div class="label">勝ち筋</div><div class="val"><div class="wins"><span class="win"><b>#3</b> 全体最適</span><span class="win"><b>#1</b> PoC設計</span></div></div></div>
+        <div class="field"><div class="label">備考</div><div class="val"><p class="note"><b>Genie One は Preview 機能です。</b>ワークスペースで未有効の場合は、<b>Catalog Explorer の検索</b>＋各テーブルの日本語コメント（AI生成含む）でデータ発見を代替できます。事前確認を推奨。</p></div></div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-card" id="s2">
+      <div class="step-head">
+        <div class="step-num">2</div>
+        <div class="h"><h3>用語（Pages）— 精度の天井が動く瞬間</h3><div class="sub">同じ質問を「素のGenie」と「用語集ありGenie」で比較する</div></div>
+        <div class="time-badge">6:00 → 12:00</div>
+      </div>
+      <div class="step-body">
+        <div class="field"><div class="label">目的</div><div class="val"><p>このハンズオンの<strong>山場</strong>。社内用語「退準（退職金準備）」を含む同じ質問を2つのエージェントに投げ、答えが変わることを体感する。精度を決めるのはモデルではなく<strong>用語の一貫性</strong>だと腹落ちさせる。</p></div></div>
+        <div class="field"><div class="label">操作</div><div class="val"><ol>
+          <li>まず <strong>【Before】素のGenie</strong>（用語集・文脈なし）を開き、下の質問を投げる。</li>
+          <li>次に <strong>法人営業アシスタント</strong>（用語集あり）で、<em>まったく同じ質問</em>を投げる。</li>
+          <li>2つの答えを並べ、どちらが「深耕」として正しいかを議論する。</li>
+        </ol></div></div>
+        <div class="field"><div class="label">質問</div><div class="val">
+          <div class="ask">退準の提案余地がある担当企業を、保有ANPの大きい順に3社教えて</div>
+        </div></div>
+        <div class="field"><div class="label">結果の対比</div><div class="val"><div class="ba">
+          <div class="out bad"><span class="tag">Before：素のGenie</span><p>「退準」を理解できず、メモの文字列を<strong>あいまいに一致</strong>させて全契約のANPを合計 → <strong>全国製薬…</strong>など、根拠のずれた企業を提示。</p></div>
+          <div class="out good"><span class="tag">After：用語集あり</span><p>退準＝<strong>退職金準備プラン</strong>と解釈し、それが<strong>未提案</strong>の企業だけを抽出 → <strong>大阪製作所・九州製作所・九州システムズ</strong>。深耕として正しい。</p></div>
+        </div></div></div>
+        <div class="field"><div class="label">深掘り</div><div class="val"><p>続けて「用語そのもの」を聞き、用語集が引かれていることを見せる。</p><div class="ask">「GLTD」とは何ですか? また就業不能に関心を示している商談はありますか?</div><div class="out good" style="margin-top:10px"><span class="tag">結果</span><p>GLTD＝団体長期障害所得補償保険（Group Long Term Disability）と<strong>定義を返し</strong>、就業不能に関心のある商談（みらいテック等）まで結合して提示。</p></div></div></div>
+        <div class="field"><div class="label">話すこと</div><div class="val"><div class="talk"><span class="tag">勝ち筋トーク</span><p>「モデルは同じ。違うのは、会社の言葉（用語・KPI・ドメイン定義）を一貫して与えているかどうかだけです。用語の揺れ＝“メトリックドリフト”を放置すると、③課題抽出も⑤提案書も、この土台の上でブレ続けます。精度の天井は、ここで決まります。」</p></div></div></div>
+        <div class="field"><div class="label">勝ち筋</div><div class="val"><div class="wins"><span class="win"><b>#5</b> 用語・KPI一貫性</span><span class="win"><b>#4</b> 文脈基盤</span></div></div></div>
+        <div class="field"><div class="label">製品名</div><div class="val"><p class="note">この用語・定義・KPIの標準化は、Databricks では <b>Unity Catalog Pages</b>（旧称: ビジネスグロッサリ。現在は Domains＋Pages＋Metric Views＋Certification として semantics/Discover に統合）で整備します。本ハンズオンでは用語集テーブル＋Genie の Instructions で同等の効果を再現しています。</p></div></div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-card" id="s3">
+      <div class="step-head">
+        <div class="step-num">3</div>
+        <div class="h"><h3>キュレーション（Genie Agent）— 検証済みの“業務エージェント”</h3><div class="sub">誰が使っても同じ答えになる、承認済みの仕組みを見る</div></div>
+        <div class="time-badge">12:00 → 17:00</div>
+      </div>
+      <div class="step-body">
+        <div class="field"><div class="label">目的</div><div class="val"><p>STEP 2 で使った「法人営業アシスタント」の正体を明かす。これは汎用チャットではなく、<strong>特定業務にキュレーションされた Genie Agent</strong>。承認済みの質問・検証済みSQL・用語ルール（Pages）が仕込まれている。</p></div></div>
+        <div class="field"><div class="label">操作</div><div class="val"><ol>
+          <li>Genie Agent の編集画面で、<strong>登録済みサンプル質問</strong>・<strong>検証済みSQL（Example queries）</strong>・<strong>Instructions（用語ルール）</strong>・<strong>対象7資産</strong>を見せる。</li>
+          <li>用意されたサンプル質問チップから、KPI集計の質問を1つ実行する。</li>
+        </ol></div></div>
+        <div class="field"><div class="label">質問</div><div class="val">
+          <div class="ask">BAチャネルのANP合計と契約件数は?</div>
+        </div></div>
+        <div class="field"><div class="label">期待</div><div class="val"><div class="out good"><span class="tag">結果</span><p>「BA＝銀行窓口販売」と用語を解釈し、メトリックビューで集計 → ANP合計 <strong>約4.45億円</strong>、契約件数 <strong>172件</strong>。用語（Pages）とKPI（Metric View）が同時に効いている。</p></div></div></div>
+        <div class="field"><div class="label">話すこと</div><div class="val"><div class="talk"><span class="tag">勝ち筋トーク</span><p>「業務ごとに検証済みの質問とSQLを“資産”として貯められるので、担当者が変わっても答えの再現性が保たれます。これは、精度に課題が出たときに『他アーキを検討』ではなく、『評価と改善の仕組みで直す』という発想。統制されたエージェントは、運用して初めて価値が出ます。」</p></div></div></div>
+        <div class="field"><div class="label">勝ち筋</div><div class="val"><div class="wins"><span class="win"><b>#16</b> 評価ループ</span><span class="win"><b>#6</b> RBAC継承</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step-card" id="s4">
+      <div class="step-head">
+        <div class="step-num">4</div>
+        <div class="h"><h3>関係（Ontology）— エージェントが横断できる理由</h3><div class="sub">企業・契約・商談・商品の“つながり”を1問で辿る</div></div>
+        <div class="time-badge">17:00 → 23:00</div>
+      </div>
+      <div class="step-body">
+        <div class="field"><div class="label">目的</div><div class="val"><p>Genie Agent が“なぜ”企業を軸に横断照会できるのか——その答えが<strong>関係（Ontology）</strong>。単一表では出せない「企業360度の状況」を1問で引き出し、関係（PK/FK）＋セマンティック層（Metric View）＋企業360ビューがその正体だと示す。</p></div></div>
+        <div class="field"><div class="label">操作</div><div class="val"><ol>
+          <li><strong>法人営業アシスタント</strong>で、深耕の主役企業について横断質問を投げる。</li>
+          <li>1つの答えに「契約・商談・未提案・課題」が揃うことを確認する。</li>
+        </ol></div></div>
+        <div class="field"><div class="label">質問</div><div class="val">
+          <div class="ask">九州建設株式会社の契約状況・直近の商談・未提案商品をまとめて教えて</div>
+        </div></div>
+        <div class="field"><div class="label">期待</div><div class="val"><div class="out good"><span class="tag">結果</span><p>契約 <strong>14件</strong>（有効12件）、保有ANP <strong>2,788万円</strong>、平均13ヶ月継続率 <strong>0.905</strong>、直近商談は<strong>クロージング</strong>（事業承継を見据えた経営者保険を提案）、未提案商品は<strong>事業保障プラン・法人向け医療保険</strong>——を1回で提示。</p></div></div></div>
+        <div class="field"><div class="label">話すこと</div><div class="val"><div class="talk"><span class="tag">勝ち筋トーク</span><p>「企業・契約・商談・商品は、バラバラの表ではなく“関係”でつながっています。この関係＝Ontologyがあるから、Genie Agentは担当者が頭の中でやっていた突き合わせを一気に肩代わりできる。しかも権限（RBAC）はソース側を継承するので、見てよい人にしか見えません。」</p></div></div></div>
+        <div class="field"><div class="label">勝ち筋</div><div class="val"><div class="wins"><span class="win"><b>#4</b> オントロジー</span><span class="win"><b>#6</b> 権限尊重の文脈</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step-card" id="s5">
+      <div class="step-head">
+        <div class="step-num">5</div>
+        <div class="h"><h3>提案生成（Agent Bricks）— データ×資料をまとめて提案書へ</h3><div class="sub">複数エージェントを束ね、提案ドラフトを自動生成する</div></div>
+        <div class="time-badge">23:00 → 28:00</div>
+      </div>
+      <div class="step-body">
+        <div class="field"><div class="label">目的</div><div class="val"><p>他社PoCの <span class="mono">⑤提案書作成</span> に正対。<strong>データを見る Genie</strong> と、<strong>商品資料（パンフ・約款）に答える Knowledge Assistant</strong> を、<strong>Multi-Agent Supervisor（MAS）</strong> が束ねて協働。企業分析と商品知識を1つの提案ドラフトに統合する。</p></div></div>
+        <div class="field"><div class="label">操作</div><div class="val"><ol>
+          <li><strong>MAS エージェント</strong>のチャットを開く。</li>
+          <li>下の依頼を投げ、① Genieが企業360と未提案商品を取得 → ② KAが該当商品の付保基準・保障内容を取得 → ③ 統合ドラフトが返る、という協働を見せる。</li>
+        </ol></div></div>
+        <div class="field"><div class="label">依頼</div><div class="val">
+          <div class="ask">九州建設株式会社向けに、未提案商品をふまえた提案の骨子を作って。対象商品の付保基準や保障内容も要約して含めてください。</div>
+        </div></div>
+        <div class="field"><div class="label">期待</div><div class="val"><div class="out good"><span class="tag">結果</span><p>企業の状況（建設業・従業員規模・事業承継の局面）と<strong>未提案商品（事業保障プラン・法人向け医療保険）</strong>を踏まえ、商品資料に基づく<strong>付保基準・保障内容の要約つき提案骨子</strong>が生成される。営業はこれを初稿として磨き込む。</p></div></div></div>
+        <div class="field"><div class="label">話すこと</div><div class="val"><div class="talk"><span class="tag">勝ち筋トーク</span><p>「“デモが動いた”と、“本番で使える”の間には、外部資料・ガバナンス・複数エージェントの協働という壁があります。Databricksはこの壁を、KA＋Genie＋MASという構成で1基盤のまま越えられる。マルチエージェントを合成・統制する土台は、他社に正対する製品がない領域です。」</p></div></div></div>
+        <div class="field"><div class="label">勝ち筋</div><div class="val"><div class="wins"><span class="win"><b>#12</b> マルチエージェント合成</span><span class="win"><b>#13</b> 本番化ギャップ</span></div></div></div>
+        <div class="field"><div class="label">事前作成</div><div class="val"><p class="note"><b>KA と MAS はUIで事前作成（約5分）。</b> 商品資料PDF 4件は <span class="mono">/Volumes/jp_fsi_catalog/houjin_eigyo/product_docs</span> に配置済み。この上に Knowledge Assistant を作り、MASで <b>Genie Agent（データ）＋KA（商品資料）</b> を束ねます。作成手順・設定は下記「事前準備・接続情報」を参照。</p></div></div>
+      </div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="step-card" id="s6">
+      <div class="step-head">
+        <div class="step-num">6</div>
+        <div class="h"><h3>統制・コスト（Unity AI Gateway）＋ 総括</h3><div class="sub">全エージェントの利用・コスト・ポリシーを俯瞰して締める</div></div>
+        <div class="time-badge">28:00 → 30:00</div>
+      </div>
+      <div class="step-body">
+        <div class="field"><div class="label">目的</div><div class="val"><p>ビジネスユーザーには「触る」より「見せる」。今日使った全AIが、1つの統制面の上で動いていることを俯瞰する。</p></div></div>
+        <div class="field"><div class="label">見せる</div><div class="val"><ul>
+          <li><strong>支出の可視化・帰属</strong> — モデル別・ユーザー別のトークン利用と支出（<span class="mono">system.ai_gateway.usage</span> ／ <span class="mono">system.serving.endpoint_usage</span> に実データ）。</li>
+          <li><strong>ポリシー</strong> — レート制限・予算上限、ガードレール／PII、「PII閲覧後は社外送信禁止」「Salesforce更新は人間承認」等のコンテキスト依存ポリシー。</li>
+          <li><strong>Smart Routing</strong> — タスクの複雑度に応じたモデル自動選択（Kimi／GPT／Claude 等が同一基盤に多数）。過剰モデルを避けてコストを下げる。</li>
+        </ul></div></div>
+        <div class="field"><div class="label">締めの一言</div><div class="val"><div class="talk"><span class="tag">総括トーク</span><p>「精度①〜⑤は“入口”です。今日体感したように、勝敗を分けるのは、精度の天井を決める<strong>Context（用語・関係）</strong>、支出とリスクを抑える<strong>統制</strong>、そして<strong>本番運用</strong>。この3つを測らないPoCは、不完全です。次のPoCでは、ここを一緒に測りましょう。」</p></div></div></div>
+        <div class="field"><div class="label">勝ち筋</div><div class="val"><div class="wins"><span class="win"><b>#2</b> コスト可視化</span><span class="win"><b>#7</b> 一元統制</span><span class="win"><b>#8</b> 動的ポリシー</span><span class="win"><b>#10</b> 帰属・上限</span><span class="win"><b>#11</b> Smart Routing</span></div></div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="prep">
+  <div class="wrap">
+    <div class="kicker">ファシリテーター向け</div>
+    <h2>事前準備・接続情報</h2>
+    <div class="card">
+      <dl class="kv">
+        <dt>ワークスペース</dt><dd><span class="mono">fevm-jp-fsi</span>（profile: jp-fsi）</dd>
+        <dt>SQL Warehouse</dt><dd><span class="mono">Serverless Starter Warehouse / 89f4e2e932ab04ea</span></dd>
+        <dt>カタログ.スキーマ</dt><dd><span class="mono">jp_fsi_catalog.houjin_eigyo</span></dd>
+        <dt>Genie Agent（本命）</dt><dd><a href="https://fevm-jp-fsi.cloud.databricks.com/genie/rooms/01f19f38c97213fbbfefeefea96ddd19" target="_blank" rel="noopener">日本生命 法人営業アシスタント</a> <span class="mono">01f19f38c97213fbbfefeefea96ddd19</span></dd>
+        <dt>Genie【Before】対比</dt><dd><a href="https://fevm-jp-fsi.cloud.databricks.com/genie/rooms/01f19f390fc11b59906447d9a2f1701c" target="_blank" rel="noopener">用語集・文脈なし</a> <span class="mono">01f19f390fc11b59906447d9a2f1701c</span></dd>
+        <dt>用語集テーブル</dt><dd><span class="mono">shanai_ryakugo</span>（社内用語25語）</dd>
+        <dt>企業360ビュー</dt><dd><span class="mono">v_eigyo_360</span>（企業×契約×商談×未提案）</dd>
+        <dt>KPIメトリックビュー</dt><dd><span class="mono">mv_eigyo_kpi</span></dd>
+        <dt>商品資料PDF</dt><dd><span class="mono">/Volumes/jp_fsi_catalog/houjin_eigyo/product_docs</span>（団体定期／企業年金DB・DC／GLTD／経営者保険 の4件・配置済み）</dd>
+      </dl>
+    </div>
+
+    <h3 style="font-size:16px;margin:24px 0 10px">STEP 5 の事前作成手順（UI・約5分）</h3>
+    <div class="card">
+      <p style="margin-top:0"><b>① Knowledge Assistant を作る</b>（AI/BI → Agent Bricks → Knowledge Assistant → Create）</p>
+      <dl class="kv">
+        <dt>名前</dt><dd><span class="mono">nissay_houjin_product_ka</span></dd>
+        <dt>ナレッジソース</dt><dd>Volume <span class="mono">/Volumes/jp_fsi_catalog/houjin_eigyo/product_docs</span>（PDF 4件）</dd>
+        <dt>説明・指示</dt><dd>「法人向け保険商品（団体定期保険・企業年金・GLTD・経営者保険）の付保基準・保障内容・保険料・税務の質問に、商品資料に基づき日本語で答える営業支援アシスタント」</dd>
+        <dt>プロビジョニング</dt><dd>2〜5分で <span class="pill ok">ONLINE</span> に。</dd>
+        <dt>動作確認</dt><dd>「団体定期保険の最低加入人数は?」→ <b>原則5名以上</b>／「GLTDの免責期間は?」→ <b>通常30〜90日</b>／「DCの利点は?」→ <b>従業員が運用を選択・転職時に持ち運び可（ポータビリティ）</b></dd>
+      </dl>
+      <p style="margin-bottom:0"><b>② Multi-Agent Supervisor を作る</b>（AI/BI → Agent Bricks → Multi-Agent Supervisor → Create）</p>
+      <dl class="kv">
+        <dt>名前</dt><dd><span class="mono">nissay_houjin_sales_supervisor</span></dd>
+        <dt>エージェント1（データ）</dt><dd>Genie space <span class="mono">01f19f38c97213fbbfefeefea96ddd19</span> — 「企業・契約・商談・未提案商品・KPI・社内用語の照会」</dd>
+        <dt>エージェント2（商品資料）</dt><dd>KA <span class="mono">nissay_houjin_product_ka</span> — 「商品の付保基準・保障内容・保険料・税務」</dd>
+        <dt>ルーティング指示</dt><dd>企業/契約/商談/未提案/KPIは Genie、商品仕様は KA。提案作成の依頼は両者を連携（まずGenieで企業状況と未提案を取得→KAで該当商品を要約→統合）。</dd>
+        <dt>動作確認</dt><dd>「九州建設株式会社向けに、未提案商品をふまえた提案の骨子を作って。付保基準も含めて」</dd>
+      </dl>
+    </div>
+    <div style="margin-top:16px" class="note">
+      <b>Preview 機能の事前確認：</b> <span class="pill beta">Beta</span> <b>Genie One</b>（データ発見）／<b>UC Pages・semantics</b>（用語集のUI表示）／<b>Unity AI Gateway の管理UI</b> はワークスペースにより有効・無効が分かれます。無効なら本台本の代替（Catalog Explorer 検索、用語集テーブル＋Instructions、system tables のダッシュボード）で見せてください。<span class="pill ok">確認済</span> Genie Agent／メトリックビュー／system.ai_gateway 系テーブルは動作確認済みです。
+    </div>
+  </div>
+</section>
+
+<section id="map">
+  <div class="wrap">
+    <div class="kicker">検証マトリックスとの対応</div>
+    <h2>勝ち筋マッピング</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>STEP</th><th>体感する機能</th><th>マトリックス勝ち筋</th><th>ひとこと</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">1</td><td>Genie One / データ発見</td><td class="mono">#1 #3</td><td>SaaS積み上げでなく全体最適の入口</td></tr>
+          <tr><td class="mono">2</td><td>Pages（用語）</td><td class="mono">#4 #5</td><td>用語の一貫性＝精度の天井。メトリックドリフト対策</td></tr>
+          <tr><td class="mono">3</td><td>Genie Agent（キュレーション）</td><td class="mono">#6 #16</td><td>検証済みSQL・承認質問で再現性、RBAC継承</td></tr>
+          <tr><td class="mono">4</td><td>Ontology（関係）</td><td class="mono">#4 #6</td><td>知識グラフで横断。権限尊重の文脈注入</td></tr>
+          <tr><td class="mono">5</td><td>Agent Bricks（MAS＋KA）</td><td class="mono">#12 #13</td><td>マルチエージェント合成と本番化ギャップ</td></tr>
+          <tr><td class="mono">6</td><td>Unity AI Gateway</td><td class="mono">#2 #7 #8 #10 #11</td><td>統制・支出可視化・動的ポリシー・Smart Routing</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="tips">
+  <div class="wrap">
+    <div class="kicker">進行のコツ</div>
+    <h2>講師メモ</h2>
+    <div class="card">
+      <ul style="margin:0;padding-left:20px">
+        <li style="margin-bottom:10px"><strong>STEP 2 が主役。</strong>Before と After は<em>まったく同じ質問文</em>を使うこと。違いが「モデル」ではなく「Context」だけであることが伝わる。</li>
+        <li style="margin-bottom:10px"><strong>30分厳守。</strong>各ステップの質問は原則1つに絞る。深掘りは時間が余ったときのみ。</li>
+        <li style="margin-bottom:10px"><strong>コードは見せなくてよい。</strong>Genieの「SQLを見る」は開かなくて構わない。ただし技術に懐疑的な参加者がいれば、生成SQLを見せると「ちゃんと未提案だけ絞っている」ことが刺さる。</li>
+        <li style="margin-bottom:10px"><strong>主役企業。</strong>深耕＝<span class="mono">九州建設株式会社</span>、新規開拓＝<span class="mono">みらいテック株式会社</span>。別企業で試したい場合も、企業360ビューにある96社ならどれでも動く。</li>
+        <li><strong>相手の土俵に戻さない。</strong>「①〜⑤の精度は何%出ますか?」と聞かれたら、「精度はモデルとContext次第。今日の主眼は、その精度の天井を上げるContextと、本番で使い続ける統制です」と論点を戻す。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    法人営業AIエージェント・ラボ ／ Databricks 上に構築したデモ環境（jp-fsi）を用いた30分ハンズオン台本。参加者はコードを書かず、UI操作のみで進行します。
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var root=document.documentElement, btn=document.getElementById('tt');
+    var KEY='nissay-lab-theme';
+    try{var s=localStorage.getItem(KEY); if(s){root.setAttribute('data-theme',s);}}catch(e){}
+    function cur(){
+      var a=root.getAttribute('data-theme');
+      if(a) return a;
+      return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';
+    }
+    btn.addEventListener('click',function(){
+      var next=cur()==='dark'?'light':'dark';
+      root.setAttribute('data-theme',next);
+      try{localStorage.setItem(KEY,next);}catch(e){}
+    });
+  })();
+</script>

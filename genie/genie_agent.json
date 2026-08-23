@@ -1,0 +1,75 @@
+{
+  "version": 2,
+  "config": {
+    "sample_questions": [
+      {"id": "10000000000000000000000000000001", "question": ["深耕対象として、未提案の商品がある担当企業を保有ANPの大きい順に教えて"]},
+      {"id": "10000000000000000000000000000002", "question": ["九州建設株式会社の契約状況・直近の商談・未提案商品をまとめて教えて"]},
+      {"id": "10000000000000000000000000000003", "question": ["「GLTD」とは何ですか?また就業不能に関心を示している商談はありますか?"]},
+      {"id": "10000000000000000000000000000004", "question": ["新規開拓ターゲットのうち、成長シグナルが強い企業を教えて"]},
+      {"id": "10000000000000000000000000000005", "question": ["BAチャネルのANP合計と契約件数は?"]}
+    ]
+  },
+  "data_sources": {
+    "tables": [
+      {"identifier": "jp_fsi_catalog.houjin_eigyo.houjin_keiyaku"},
+      {"identifier": "jp_fsi_catalog.houjin_eigyo.mv_eigyo_kpi"},
+      {"identifier": "jp_fsi_catalog.houjin_eigyo.shanai_ryakugo"},
+      {"identifier": "jp_fsi_catalog.houjin_eigyo.shodan_katsudo"},
+      {"identifier": "jp_fsi_catalog.houjin_eigyo.shohin_master"},
+      {"identifier": "jp_fsi_catalog.houjin_eigyo.tantou_kigyo"},
+      {"identifier": "jp_fsi_catalog.houjin_eigyo.v_eigyo_360"}
+    ]
+  },
+  "instructions": {
+    "example_question_sqls": [
+      {
+        "id": "20000000000000000000000000000001",
+        "question": ["GLTDとは何ですか?", "GLTDの意味を教えて"],
+        "sql": ["SELECT ryaku, seishiki_meisho, eigo, teigi, ruigigo\n", "FROM jp_fsi_catalog.houjin_eigyo.shanai_ryakugo\n", "WHERE ryaku = 'GLTD'"]
+      },
+      {
+        "id": "20000000000000000000000000000002",
+        "question": ["深耕対象として未提案の商品がある担当企業を教えて"],
+        "sql": ["SELECT kaisha_name, gyoshu, jugyoin_su, hoyu_anp_manyen, mihyo_shohin\n", "FROM jp_fsi_catalog.houjin_eigyo.v_eigyo_360\n", "WHERE kubun = '既存' AND mihyo_shohin IS NOT NULL AND mihyo_shohin <> ''\n", "ORDER BY hoyu_anp_manyen DESC\n", "LIMIT 20"]
+      },
+      {
+        "id": "20000000000000000000000000000003",
+        "question": ["九州建設株式会社の状況をまとめて教えて"],
+        "sql": ["SELECT kaisha_name, gyoshu, jugyoin_su, uriage_oku, yoshin_rank, seicho_signal, kadai_memo,\n", "       keiyaku_su, yuko_keiyaku_su, hoyu_anp_manyen, avg_13m_keizoku_ritsu, mihyo_shohin,\n", "       shodan_su, saishu_shodan_bi, chikin_stage, chikin_memo, chikin_next_action\n", "FROM jp_fsi_catalog.houjin_eigyo.v_eigyo_360\n", "WHERE kaisha_name = '九州建設株式会社'"]
+      },
+      {
+        "id": "20000000000000000000000000000004",
+        "question": ["新規開拓ターゲットの企業を教えて"],
+        "sql": ["SELECT kaisha_name, gyoshu, jugyoin_su, uriage_oku, seicho_signal, kadai_memo\n", "FROM jp_fsi_catalog.houjin_eigyo.v_eigyo_360\n", "WHERE kubun = '新規開拓'\n", "ORDER BY jugyoin_su DESC"]
+      },
+      {
+        "id": "20000000000000000000000000000005",
+        "question": ["BAチャネルのANP合計と契約件数は?"],
+        "sql": ["SELECT channel, MEASURE(total_anp) AS anp_gokei, MEASURE(keiyaku_kensu) AS keiyaku_kensu\n", "FROM jp_fsi_catalog.houjin_eigyo.mv_eigyo_kpi\n", "WHERE channel = '銀行窓口販売'\n", "GROUP BY channel"]
+      }
+    ],
+    "text_instructions": [
+      {
+        "id": "30000000000000000000000000000001",
+        "content": [
+          "あなたは生命保険会社の「法人営業アシスタント」です。法人営業の担当者が、担当企業の分析・課題の抽出・提案の検討を行うのを支援します。回答は日本語で、簡潔に。\n",
+          "\n",
+          "【最重要: 社内用語の解釈】ユーザーの質問には社内の略語・専門用語(例: ANP、13ヶ月継続率、深耕、新規開拓、総幹事、団体扱、GLTD、事保、退準、経営者保険、福利厚生、BA、代企、法企、直販、DB、DC、予定利率、被保険者、付保、クロスセル、与信、パイプライン)が含まれます。これらの意味は shanai_ryakugo(用語集)テーブルの teigi(定義)と ruigigo(類義語)を必ず参照して解釈してください。ユーザーが略語で聞いても、正式名称・英語・類義語で照合します。用語の意味そのものを聞かれたら shanai_ryakugo から定義を返します。\n",
+          "\n",
+          "【担当企業の360度状況】特定企業の『契約状況・商談・未提案商品・課題』をまとめて聞かれたら、v_eigyo_360 を使います。1行に企業プロファイル・契約サマリ(keiyaku_su/yuko_keiyaku_su/hoyu_anp_manyen/avg_13m_keizoku_ritsu)・未提案商品(mihyo_shohin)・直近商談(chikin_stage/chikin_memo)が揃っています。\n",
+          "\n",
+          "【深耕対象】= 既存契約先(kubun='既存')で未提案商品(mihyo_shohin が空でない)がある企業。クロスセルの候補です。v_eigyo_360 を使います。\n",
+          "【新規開拓ターゲット】= kubun='新規開拓' の企業。まだ契約がなく、成長シグナル(seicho_signal)を手掛かりにアプローチします。\n",
+          "【未提案商品】= その企業がまだ契約していない商品。v_eigyo_360 の mihyo_shohin 列。提案の切り口になります。\n",
+          "\n",
+          "【KPI集計】ANP合計・契約件数・平均13ヶ月継続率をチャネル/業種/商品/支社/契約月で集計するときは mv_eigyo_kpi(メトリックビュー)を使い、MEASURE(total_anp) / MEASURE(keiyaku_kensu) / MEASURE(avg_13m_ritsu) で集計します。チャネルの対応: BA=銀行窓口販売、代企=代理店営業企画経由、直販=直接販売、団体扱=団体扱契約、法企=法人営業企画部直轄。\n",
+          "\n",
+          "【契約の有効/失効】status 列は 継続・成約(=有効)、失効・解約(=失効)です。有効な契約は status IN ('継続','成約') で絞り込みます。\n",
+          "【金額表記】ANP(年換算保険料)は円が原単位。v_eigyo_360 の hoyu_anp_manyen は万円単位です。\n",
+          "【商品一覧】商品の正式名称・区分は shohin_master を参照します。\n",
+          "【個別の商談履歴】訪問・提案・フォロー等の活動明細は shodan_katsudo を使います。memo 列には社内用語が含まれるため用語集と併せて解釈します。"
+        ]
+      }
+    ]
+  }
+}
