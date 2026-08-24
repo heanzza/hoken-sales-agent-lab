@@ -13,7 +13,6 @@
     "tables": [
       {"identifier": "jp_fsi_catalog.houjin_eigyo.houjin_keiyaku"},
       {"identifier": "jp_fsi_catalog.houjin_eigyo.mv_eigyo_kpi"},
-      {"identifier": "jp_fsi_catalog.houjin_eigyo.shanai_ryakugo"},
       {"identifier": "jp_fsi_catalog.houjin_eigyo.shodan_katsudo"},
       {"identifier": "jp_fsi_catalog.houjin_eigyo.shohin_master"},
       {"identifier": "jp_fsi_catalog.houjin_eigyo.tantou_kigyo"},
@@ -22,11 +21,6 @@
   },
   "instructions": {
     "example_question_sqls": [
-      {
-        "id": "20000000000000000000000000000001",
-        "question": ["GLTDとは何ですか?", "GLTDの意味を教えて"],
-        "sql": ["SELECT ryaku, seishiki_meisho, eigo, teigi, ruigigo\n", "FROM jp_fsi_catalog.houjin_eigyo.shanai_ryakugo\n", "WHERE ryaku = 'GLTD'"]
-      },
       {
         "id": "20000000000000000000000000000002",
         "question": ["深耕対象として未提案の商品がある担当企業を教えて"],
@@ -54,20 +48,30 @@
         "content": [
           "あなたは生命保険会社の「法人営業アシスタント」です。法人営業の担当者が、担当企業の分析・課題の抽出・提案の検討を行うのを支援します。回答は日本語で、簡潔に。\n",
           "\n",
-          "【最重要: 社内用語の解釈】ユーザーの質問には社内の略語・専門用語(例: ANP、13ヶ月継続率、深耕、新規開拓、総幹事、団体扱、GLTD、事保、退準、経営者保険、福利厚生、BA、代企、法企、直販、DB、DC、予定利率、被保険者、付保、クロスセル、与信、パイプライン)が含まれます。これらの意味は shanai_ryakugo(用語集)テーブルの teigi(定義)と ruigigo(類義語)を必ず参照して解釈してください。ユーザーが略語で聞いても、正式名称・英語・類義語で照合します。用語の意味そのものを聞かれたら shanai_ryakugo から定義を返します。\n",
+          "【社内用語の解釈】質問には社内の略語・専門用語が含まれます。用語の定義は社内用語集(Unity Catalog Pages で管理)にあり、以下を正として解釈してください。ユーザーが略語で聞いても正式名称・類義語で照合し、意味そのものを聞かれたら下記の定義を答えます。\n",
+          "- ANP=年換算保険料(新契約の保険料を年額換算した主要KPI)\n",
+          "- 13ヶ月継続率=契約から13ヶ月後に継続している割合(契約の品質指標)\n",
+          "- 深耕(=クロスセル)=既存契約先に追加提案しシェアを高める営業活動\n",
+          "- 新規開拓=まだ取引のない企業を新たに開拓する営業活動\n",
+          "- 総幹事=共同引受の団体保険で契約事務を統括する幹事会社\n",
+          "- 団体扱=保険料を給与天引き等でまとめて収納する契約形態\n",
+          "- GLTD=団体長期障害所得補償保険(Group Long Term Disability。就業不能時に所得を長期補償)\n",
+          "- 事保=事業保障、経営者保険=経営者・役員を被保険者とし事業保障や退職金準備に用いる保険\n",
+          "- 福利厚生=従業員向けの保障・退職金等の制度、退準=退職金準備(商品「退職金準備プラン」)\n",
+          "- 予定利率=保険料算出時に見込む運用利回り、解約返戻金=解約時に契約者へ払い戻される金額、被保険者=保険の対象者、付保=保険をかけること\n",
+          "- BA=銀行窓口販売、代企=代理店営業企画経由、直販=直接販売、法企=法人営業企画部直轄\n",
+          "- DB=確定給付企業年金、DC=確定拠出年金(企業型)、与信=取引先の信用力区分(A/B/C)、パイプライン=進行中の商談の総体\n",
           "\n",
-          "【担当企業の360度状況】特定企業の『契約状況・商談・未提案商品・課題』をまとめて聞かれたら、v_eigyo_360 を使います。1行に企業プロファイル・契約サマリ(keiyaku_su/yuko_keiyaku_su/hoyu_anp_manyen/avg_13m_keizoku_ritsu)・未提案商品(mihyo_shohin)・直近商談(chikin_stage/chikin_memo)が揃っています。\n",
-          "\n",
-          "【深耕対象】= 既存契約先(kubun='既存')で未提案商品(mihyo_shohin が空でない)がある企業。クロスセルの候補です。v_eigyo_360 を使います。\n",
+          "【担当企業の360度状況】特定企業の『契約状況・商談・未提案商品・課題』をまとめて聞かれたら v_eigyo_360 を使います。1行に企業プロファイル・契約サマリ(keiyaku_su/yuko_keiyaku_su/hoyu_anp_manyen/avg_13m_keizoku_ritsu)・未提案商品(mihyo_shohin)・直近商談(chikin_stage/chikin_memo)が揃っています。\n",
+          "【深耕対象】= 既存契約先(kubun='既存')で未提案商品(mihyo_shohin が空でない)がある企業。クロスセルの候補。v_eigyo_360 を使います。\n",
           "【新規開拓ターゲット】= kubun='新規開拓' の企業。まだ契約がなく、成長シグナル(seicho_signal)を手掛かりにアプローチします。\n",
-          "【未提案商品】= その企業がまだ契約していない商品。v_eigyo_360 の mihyo_shohin 列。提案の切り口になります。\n",
+          "【未提案商品】= その企業がまだ契約していない商品。v_eigyo_360 の mihyo_shohin 列。提案の切り口です。\n",
           "\n",
           "【KPI集計】ANP合計・契約件数・平均13ヶ月継続率をチャネル/業種/商品/支社/契約月で集計するときは mv_eigyo_kpi(メトリックビュー)を使い、MEASURE(total_anp) / MEASURE(keiyaku_kensu) / MEASURE(avg_13m_ritsu) で集計します。チャネルの対応: BA=銀行窓口販売、代企=代理店営業企画経由、直販=直接販売、団体扱=団体扱契約、法企=法人営業企画部直轄。\n",
-          "\n",
-          "【契約の有効/失効】status 列は 継続・成約(=有効)、失効・解約(=失効)です。有効な契約は status IN ('継続','成約') で絞り込みます。\n",
+          "【契約の有効/失効】status は 継続・成約(=有効)、失効・解約(=失効)。有効な契約は status IN ('継続','成約') で絞ります。\n",
           "【金額表記】ANP(年換算保険料)は円が原単位。v_eigyo_360 の hoyu_anp_manyen は万円単位です。\n",
           "【商品一覧】商品の正式名称・区分は shohin_master を参照します。\n",
-          "【個別の商談履歴】訪問・提案・フォロー等の活動明細は shodan_katsudo を使います。memo 列には社内用語が含まれるため用語集と併せて解釈します。"
+          "【個別の商談履歴】訪問・提案・フォロー等の活動明細は shodan_katsudo を使います。memo 列には社内用語が含まれるため上記の用語定義と併せて解釈します。"
         ]
       }
     ]

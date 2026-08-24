@@ -12,7 +12,7 @@
 
 | 種別 | 内容 | 作成物 |
 |---|---|---|
-| **利用データ** | 担当企業96社・商談200件・社内用語25語・企業360°ビュー・KPIメトリックビュー | `notebooks/01_setup_sample_data`（DDLソースは `sql/*.sql`） |
+| **利用データ** | 担当企業96社・商談200件・企業360°ビュー・KPIメトリックビュー | `notebooks/01_setup_sample_data`（DDLソースは `sql/*.sql`） |
 | **Pages 投入内容** | 用語・KPI・区分の定義集（Unity Catalog Pages 用） | `pages/houjin_eigyo_pages.md` |
 | **Genie Agent** | キュレーション済み「法人営業アシスタント」＋対比用「Before」 | `genie/*.json` |
 | **商品資料** | 商品パンフ/約款 PDF 4件（KAのソース） | `product_docs/pdf/*.pdf` |
@@ -31,7 +31,7 @@
 Unity Catalog へのデータ投入は **セットアップ・ノートブック** で行います。
 
 - `notebooks/00_config` … カタログ/スキーマ/ボリュームを設定・作成（ウィジェットで切替可）
-- `notebooks/01_setup_sample_data` … 企業・商談・用語集・企業360°ビュー・Metric View を作成（先頭で `%run ./00_config`）
+- `notebooks/01_setup_sample_data` … 企業・商談・企業360°ビュー・Metric View を作成（先頭で `%run ./00_config`）。※社内用語集は SQL テーブルにせず Pages で管理
 
 **手順**: 上記2ファイルをワークスペースにインポート → `01_setup_sample_data` を開き、ウィジェットの `catalog` / `schema` を確認して **［すべて実行］**。
 
@@ -59,9 +59,9 @@ PROFILE=<your-profile> WAREHOUSE=<warehouse_id> ./genie/create_genie_spaces.sh
 
 1. Catalog Explorer → **Discover** → Domain を作成
 2. **Pages** で `houjin_eigyo_pages.md` を取り込み
-3. Related Assets に `tantou_kigyo` / `houjin_keiyaku` / `shodan_katsudo` / `shanai_ryakugo` / `v_eigyo_360` / `mv_eigyo_kpi` を紐付け
+3. Related Assets に `tantou_kigyo` / `houjin_keiyaku` / `shodan_katsudo` / `v_eigyo_360` / `mv_eigyo_kpi` を紐付け
 
-> Pages（旧称ビジネスグロッサリ。現在は Domains＋Pages＋Metric Views＋Certification として semantics/Discover に統合）は Beta です。未有効の場合、本ラボは用語集テーブル `shanai_ryakugo` ＋ Genie の Instructions で同等効果を再現しています。
+> 社内用語集は SQL テーブルとしては作成しません。**Pages を用語の真実の源**とし、Genie は Pages（または Instructions）から用語定義を得ます。Pages（旧称ビジネスグロッサリ。現在は Domains＋Pages＋Metric Views＋Certification として semantics/Discover に統合）は Beta のため、未有効の環境では `pages/houjin_eigyo_pages.md` の内容を Genie の Instructions に取り込んで同等効果を再現します。
 
 ## Agent Bricks（KA / MAS）— UIで作成（約5分）
 
@@ -117,10 +117,9 @@ SELECT * FROM system.ai_gateway.external_model_spend ORDER BY 1 DESC LIMIT 50;
 ├── sql/                             # DDLソース（notebooksが実行する真実の源）
 │   ├── 01_tantou_kigyo.sql          #   担当企業プロファイル（既存90+新規開拓6）
 │   ├── 02_shodan_katsudo.sql        #   商談活動履歴（社内用語をメモに埋込）
-│   ├── 03_shanai_ryakugo.sql        #   社内用語集25語
-│   ├── 04_comments_constraints.sql  #   コメント＋PK/FK制約
-│   ├── 05_v_eigyo_360.sql           #   企業360°ビュー（契約×商談×未提案）
-│   └── 06_mv_eigyo_kpi.sql          #   KPIメトリックビュー
+│   ├── 03_comments_constraints.sql  #   コメント＋PK/FK制約
+│   ├── 04_v_eigyo_360.sql           #   企業360°ビュー（契約×商談×未提案）
+│   └── 05_mv_eigyo_kpi.sql          #   KPIメトリックビュー
 ├── genie/
 │   ├── genie_agent.json             # 本命（キュレーション済み）
 │   ├── genie_before.json            # Before（用語集・文脈なし）

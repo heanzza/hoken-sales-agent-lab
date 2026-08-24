@@ -263,7 +263,7 @@
         <div class="field"><div class="label">質問</div><div class="val">
           <div class="ask">法人営業の契約実績や商談履歴に使えるデータはどこにありますか?</div>
         </div></div>
-        <div class="field"><div class="label">期待</div><div class="val"><div class="out good"><span class="tag">結果</span><p>法人契約（houjin_keiyaku）・担当企業（tantou_kigyo）・商談履歴（shodan_katsudo）・社内用語集（shanai_ryakugo）・企業360ビュー・KPIメトリックビューが、説明つきで発見される。</p></div></div></div>
+        <div class="field"><div class="label">期待</div><div class="val"><div class="out good"><span class="tag">結果</span><p>法人契約（houjin_keiyaku）・担当企業（tantou_kigyo）・商談履歴（shodan_katsudo）・商品マスタ（shohin_master）・企業360ビュー・KPIメトリックビューが、説明つきで発見される。</p></div></div></div>
         <div class="field"><div class="label">話すこと</div><div class="val"><div class="talk"><span class="tag">勝ち筋トーク</span><p>「SaaSを積み上げるのではなく、データ・文脈・ガバナンスが1つの基盤に集約されているから、業務ユーザーが自力でデータへ到達できます。これは個別最適では出せない全体最適の入口です。」</p></div></div></div>
         <div class="field"><div class="label">勝ち筋</div><div class="val"><div class="wins"><span class="win"><b>#3</b> 全体最適</span><span class="win"><b>#1</b> PoC設計</span></div></div></div>
         <div class="field"><div class="label">備考</div><div class="val"><p class="note"><b>Genie One は Preview 機能です。</b>ワークスペースで未有効の場合は、<b>Catalog Explorer の検索</b>＋各テーブルの日本語コメント（AI生成含む）でデータ発見を代替できます。事前確認を推奨。</p></div></div>
@@ -294,7 +294,7 @@
         <div class="field"><div class="label">深掘り</div><div class="val"><p>続けて「用語そのもの」を聞き、用語集が引かれていることを見せる。</p><div class="ask">「GLTD」とは何ですか? また就業不能に関心を示している商談はありますか?</div><div class="out good" style="margin-top:10px"><span class="tag">結果</span><p>GLTD＝団体長期障害所得補償保険（Group Long Term Disability）と<strong>定義を返し</strong>、就業不能に関心のある商談（みらいテック等）まで結合して提示。</p></div></div></div>
         <div class="field"><div class="label">話すこと</div><div class="val"><div class="talk"><span class="tag">勝ち筋トーク</span><p>「モデルは同じ。違うのは、会社の言葉（用語・KPI・ドメイン定義）を一貫して与えているかどうかだけです。用語の揺れ＝“メトリックドリフト”を放置すると、③課題抽出も⑤提案書も、この土台の上でブレ続けます。精度の天井は、ここで決まります。」</p></div></div></div>
         <div class="field"><div class="label">勝ち筋</div><div class="val"><div class="wins"><span class="win"><b>#5</b> 用語・KPI一貫性</span><span class="win"><b>#4</b> 文脈基盤</span></div></div></div>
-        <div class="field"><div class="label">製品名</div><div class="val"><p class="note">この用語・定義・KPIの標準化は、Databricks では <b>Unity Catalog Pages</b>（旧称: ビジネスグロッサリ。現在は Domains＋Pages＋Metric Views＋Certification として semantics/Discover に統合）で整備します。本ハンズオンでは用語集テーブル＋Genie の Instructions で同等の効果を再現しています。</p></div></div>
+        <div class="field"><div class="label">製品名</div><div class="val"><p class="note">この用語・定義・KPIの標準化は、Databricks では <b>Unity Catalog Pages</b>（旧称: ビジネスグロッサリ。現在は Domains＋Pages＋Metric Views＋Certification として semantics/Discover に統合）で整備します。社内用語集は SQL テーブルにせず、Pages を真実の源とします（Pages 未有効の環境では、その内容を Genie の Instructions に取り込んで同等効果を再現）。</p></div></div>
       </div>
     </div>
 
@@ -308,7 +308,7 @@
       <div class="step-body">
         <div class="field"><div class="label">目的</div><div class="val"><p>STEP 2 で使った「法人営業アシスタント」の正体を明かす。これは汎用チャットではなく、<strong>特定業務にキュレーションされた Genie Agent</strong>。承認済みの質問・検証済みSQL・用語ルール（Pages）が仕込まれている。</p></div></div>
         <div class="field"><div class="label">操作</div><div class="val"><ol>
-          <li>Genie Agent の編集画面で、<strong>登録済みサンプル質問</strong>・<strong>検証済みSQL（Example queries）</strong>・<strong>Instructions（用語ルール）</strong>・<strong>対象7資産</strong>を見せる。</li>
+          <li>Genie Agent の編集画面で、<strong>登録済みサンプル質問</strong>・<strong>検証済みSQL（Example queries）</strong>・<strong>Instructions（用語ルール）</strong>・<strong>対象6資産</strong>を見せる。</li>
           <li>用意されたサンプル質問チップから、KPI集計の質問を1つ実行する。</li>
         </ol></div></div>
         <div class="field"><div class="label">質問</div><div class="val">
@@ -398,7 +398,7 @@
         <dt>カタログ.スキーマ</dt><dd><span class="mono">jp_fsi_catalog.houjin_eigyo</span></dd>
         <dt>Genie Agent（本命）</dt><dd><a href="https://fevm-jp-fsi.cloud.databricks.com/genie/rooms/01f19f38c97213fbbfefeefea96ddd19" target="_blank" rel="noopener">法人営業アシスタント</a> <span class="mono">01f19f38c97213fbbfefeefea96ddd19</span></dd>
         <dt>Genie【Before】対比</dt><dd><a href="https://fevm-jp-fsi.cloud.databricks.com/genie/rooms/01f19f390fc11b59906447d9a2f1701c" target="_blank" rel="noopener">用語集・文脈なし</a> <span class="mono">01f19f390fc11b59906447d9a2f1701c</span></dd>
-        <dt>用語集テーブル</dt><dd><span class="mono">shanai_ryakugo</span>（社内用語25語）</dd>
+        <dt>社内用語集</dt><dd><span class="mono">Unity Catalog Pages</span>（<span class="mono">pages/houjin_eigyo_pages.md</span>・25語）※SQLテーブルではなく Pages で管理</dd>
         <dt>企業360ビュー</dt><dd><span class="mono">v_eigyo_360</span>（企業×契約×商談×未提案）</dd>
         <dt>KPIメトリックビュー</dt><dd><span class="mono">mv_eigyo_kpi</span></dd>
         <dt>商品資料PDF</dt><dd><span class="mono">/Volumes/jp_fsi_catalog/houjin_eigyo/product_docs</span>（団体定期／企業年金DB・DC／GLTD／経営者保険 の4件・配置済み）</dd>
@@ -425,7 +425,7 @@
       </dl>
     </div>
     <div style="margin-top:16px" class="note">
-      <b>Preview 機能の事前確認：</b> <span class="pill beta">Beta</span> <b>Genie One</b>（データ発見）／<b>UC Pages・semantics</b>（用語集のUI表示）／<b>Unity AI Gateway の管理UI</b> はワークスペースにより有効・無効が分かれます。無効なら本台本の代替（Catalog Explorer 検索、用語集テーブル＋Instructions、system tables のダッシュボード）で見せてください。<span class="pill ok">確認済</span> Genie Agent／メトリックビュー／system.ai_gateway 系テーブルは動作確認済みです。
+      <b>Preview 機能の事前確認：</b> <span class="pill beta">Beta</span> <b>Genie One</b>（データ発見）／<b>UC Pages・semantics</b>（用語集のUI表示）／<b>Unity AI Gateway の管理UI</b> はワークスペースにより有効・無効が分かれます。無効なら本台本の代替（Catalog Explorer 検索、用語定義を Genie の Instructions で付与、system tables のダッシュボード）で見せてください。<span class="pill ok">確認済</span> Genie Agent／メトリックビュー／system.ai_gateway 系テーブルは動作確認済みです。
     </div>
   </div>
 </section>

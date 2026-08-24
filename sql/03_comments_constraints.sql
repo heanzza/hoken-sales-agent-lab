@@ -46,10 +46,6 @@ ALTER TABLE jp_fsi_catalog.houjin_eigyo.tantou_kigyo ADD CONSTRAINT pk_tantou_ki
 
 -- SPLIT --
 
-COMMENT ON TABLE jp_fsi_catalog.houjin_eigyo.shodan_katsudo IS '商談活動履歴。担当企業ごとの訪問・提案・フォロー等の活動記録。memo列には社内用語(深耕/総幹事/GLTD等)が含まれるためshanai_ryakugo(用語集)と併せて解釈する。'
-
--- SPLIT --
-
 ALTER TABLE jp_fsi_catalog.houjin_eigyo.shodan_katsudo ALTER COLUMN kaisha_name COMMENT '会社名。tantou_kigyoとの結合キー'
 
 -- SPLIT --
@@ -87,35 +83,3 @@ ALTER TABLE jp_fsi_catalog.houjin_eigyo.shodan_katsudo ADD CONSTRAINT pk_shodan 
 -- SPLIT --
 
 ALTER TABLE jp_fsi_catalog.houjin_eigyo.shodan_katsudo ADD CONSTRAINT fk_shodan_kigyo FOREIGN KEY (kaisha_name) REFERENCES jp_fsi_catalog.houjin_eigyo.tantou_kigyo(kaisha_name)
-
--- SPLIT --
-
-COMMENT ON TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo IS '社内略語・業務用語集(グロッサリ)。法人営業で使う略語・KPI・商品区分・チャネルの正式名称と定義。営業メモや質問に登場する用語の解釈に用いる。'
-
--- SPLIT --
-
-ALTER TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo ALTER COLUMN ryaku COMMENT '略語・用語(例: ANP, 深耕, 総幹事, GLTD, BA)'
-
--- SPLIT --
-
-ALTER TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo ALTER COLUMN seishiki_meisho COMMENT '正式名称'
-
--- SPLIT --
-
-ALTER TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo ALTER COLUMN eigo COMMENT '英語表記'
-
--- SPLIT --
-
-ALTER TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo ALTER COLUMN kubun COMMENT '用語の区分(KPI/商品/チャネル/営業方針/保険用語/業務/部門)'
-
--- SPLIT --
-
-ALTER TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo ALTER COLUMN teigi COMMENT '定義・意味'
-
--- SPLIT --
-
-ALTER TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo ALTER COLUMN ruigigo COMMENT '類義語・シノニム'
-
--- SPLIT --
-
-ALTER TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo ALTER COLUMN owner_bumon COMMENT '所管部門'

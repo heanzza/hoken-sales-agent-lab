@@ -2,7 +2,9 @@
 # MAGIC %md
 # MAGIC # 01_setup_sample_data — 利用データのセットアップ
 # MAGIC 
-# MAGIC 担当企業・商談・社内用語集・企業360°ビュー・KPIメトリックビューを作成します。**［すべて実行］**してください。
+# MAGIC 担当企業・商談・企業360°ビュー・KPIメトリックビューを作成します。**［すべて実行］**してください。
+# MAGIC 
+# MAGIC 社内用語集は SQL テーブルとしては作成しません（**Unity Catalog Pages** で管理し、Genie の Instructions が定義を保持します。`pages/houjin_eigyo_pages.md` 参照）。
 # MAGIC 
 # MAGIC **前提**: 法人契約ファクト `houjin_keiyaku` とマスタ `channel_master` / `shohin_master` / `shibu_master` が対象スキーマに存在すること。
 # COMMAND ----------
@@ -149,42 +151,6 @@ FROM gen
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 社内用語集 (shanai_ryakugo)
-# COMMAND ----------
-
-run("""
-CREATE OR REPLACE TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo AS
-SELECT * FROM (VALUES
-  ('ANP', '年換算保険料', 'Annualized New Premium', 'KPI', '新契約の保険料を年額に換算した指標。法人営業の主要な成績KPI。', '年換算保険料', '法人営業企画部'),
-  ('13ヶ月継続率', '十三ヶ月継続率', '13-month persistency', 'KPI', '契約から13ヶ月後に有効に継続している契約の割合。契約の品質指標。', '継続率, persistency', '法人営業企画部'),
-  ('団定', '団体定期保険', 'Group Term Life', '商品', '企業が従業員を一括して被保険者とする1年更新の定期保険。', '団体定期', '商品部'),
-  ('団体扱', '団体扱契約', 'Group-billed policy', 'チャネル', '企業経由で保険料を給与天引き等でまとめて収納する契約形態。', 'だんたいあつかい', '法人営業企画部'),
-  ('総幹事', '総幹事会社', 'Lead insurer', '業務', '複数保険会社が共同引受する団体保険で契約事務を統括する幹事会社。獲得すると取引の主導権を握れる。', '幹事', '法人営業企画部'),
-  ('GLTD', '団体長期障害所得補償保険', 'Group Long Term Disability', '商品', '従業員が就業不能になった際に所得を長期にわたり補償する団体保険。', '就業不能保障', '商品部'),
-  ('深耕', '深耕開拓', 'Account deepening', '営業方針', '既存の契約先に追加提案を行いシェアを高める営業活動。', 'アップセル, クロスセル', '法人営業企画部'),
-  ('新規開拓', '新規開拓', 'New business acquisition', '営業方針', 'まだ取引のない企業を新たに開拓する営業活動。', 'new logo, 新規', '法人営業企画部'),
-  ('事保', '事業保障', 'Business protection', '商品区分', '経営者の死亡・就業不能時に事業を守るための保険。', '事業保障プラン', '商品部'),
-  ('経営者保険', '経営者保険', 'Keyman insurance', '商品区分', '経営者・役員を被保険者とし事業保障や退職金準備に用いる保険。', 'キーマン保険', '商品部'),
-  ('福利厚生', '福利厚生プラン', 'Employee benefits', '商品区分', '従業員向けの保障・退職金等の福利厚生制度。', 'ベネフィット', '商品部'),
-  ('退準', '退職金準備', 'Retirement funding', '商品区分', '従業員・役員の退職金原資を準備する保険・年金プラン。', '退職金原資', '商品部'),
-  ('予定利率', '予定利率', 'Assumed interest rate', '保険用語', '保険会社が保険料算出時に見込む運用利回り。解約返戻金の水準に影響する。', '', '商品部'),
-  ('解約返戻金', '解約返戻金', 'Surrender value', '保険用語', '契約を解約した際に契約者へ払い戻される金額。', '返戻金', '商品部'),
-  ('被保険者', '被保険者', 'Insured person', '保険用語', '保険の対象となる人。団体保険では加入する従業員を指す。', '', '商品部'),
-  ('付保', '付保', 'Coverage placement', '業務', '保険をかけること。付保内容=保障の設計内容を指す。', '', '商品部'),
-  ('BA', '銀行窓口販売', 'Bancassurance', 'チャネル', '銀行の窓口を通じて保険を販売するチャネル。', '銀窓, バンカシュアランス', '代理店営業企画部'),
-  ('代企', '代理店営業企画', 'Agency channel planning', 'チャネル', '代理店経由の営業を企画・支援するチャネル。', '代理店チャネル', '代理店営業企画部'),
-  ('法企', '法人営業企画部', 'Corporate sales planning dept.', '部門', '法人向け営業を統括・企画する部門。', '法人営業企画部', '法人営業企画部'),
-  ('直販', '直接販売', 'Direct sales', 'チャネル', '自社の営業職員が企業に直接販売するチャネル。', 'ダイレクト', '法人営業企画部'),
-  ('DB', '確定給付企業年金', 'Defined Benefit', '商品区分', '給付額があらかじめ定められた企業年金制度。', '確定給付', '商品部'),
-  ('DC', '確定拠出年金', 'Defined Contribution', '商品区分', '掛金が確定し運用成果で将来の給付が変わる企業年金制度(企業型DC)。', '確定拠出, 401k', '商品部'),
-  ('クロスセル', '交差販売', 'Cross-sell', '営業方針', '既存の契約先に別の商品を追加提案すること。深耕の代表的な手法。', '追加提案', '法人営業企画部'),
-  ('与信', '与信区分', 'Credit rating', '業務', '取引先企業の信用力の区分(A/B/C)。提案の可否や条件に影響する。', '信用格付', '法人営業企画部'),
-  ('パイプライン', '商談パイプライン', 'Sales pipeline', '業務', '進行中の商談を段階別に管理した見込み案件の総体。', '見込み案件', '法人営業企画部')
-) AS t(ryaku, seishiki_meisho, eigo, kubun, teigi, ruigigo, owner_bumon)
-""")
-# COMMAND ----------
-
-# MAGIC %md
 # MAGIC ## コメント & PK/FK 制約
 # COMMAND ----------
 
@@ -237,10 +203,6 @@ ALTER TABLE jp_fsi_catalog.houjin_eigyo.tantou_kigyo ADD CONSTRAINT pk_tantou_ki
 
 -- SPLIT --
 
-COMMENT ON TABLE jp_fsi_catalog.houjin_eigyo.shodan_katsudo IS '商談活動履歴。担当企業ごとの訪問・提案・フォロー等の活動記録。memo列には社内用語(深耕/総幹事/GLTD等)が含まれるためshanai_ryakugo(用語集)と併せて解釈する。'
-
--- SPLIT --
-
 ALTER TABLE jp_fsi_catalog.houjin_eigyo.shodan_katsudo ALTER COLUMN kaisha_name COMMENT '会社名。tantou_kigyoとの結合キー'
 
 -- SPLIT --
@@ -278,38 +240,6 @@ ALTER TABLE jp_fsi_catalog.houjin_eigyo.shodan_katsudo ADD CONSTRAINT pk_shodan 
 -- SPLIT --
 
 ALTER TABLE jp_fsi_catalog.houjin_eigyo.shodan_katsudo ADD CONSTRAINT fk_shodan_kigyo FOREIGN KEY (kaisha_name) REFERENCES jp_fsi_catalog.houjin_eigyo.tantou_kigyo(kaisha_name)
-
--- SPLIT --
-
-COMMENT ON TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo IS '社内略語・業務用語集(グロッサリ)。法人営業で使う略語・KPI・商品区分・チャネルの正式名称と定義。営業メモや質問に登場する用語の解釈に用いる。'
-
--- SPLIT --
-
-ALTER TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo ALTER COLUMN ryaku COMMENT '略語・用語(例: ANP, 深耕, 総幹事, GLTD, BA)'
-
--- SPLIT --
-
-ALTER TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo ALTER COLUMN seishiki_meisho COMMENT '正式名称'
-
--- SPLIT --
-
-ALTER TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo ALTER COLUMN eigo COMMENT '英語表記'
-
--- SPLIT --
-
-ALTER TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo ALTER COLUMN kubun COMMENT '用語の区分(KPI/商品/チャネル/営業方針/保険用語/業務/部門)'
-
--- SPLIT --
-
-ALTER TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo ALTER COLUMN teigi COMMENT '定義・意味'
-
--- SPLIT --
-
-ALTER TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo ALTER COLUMN ruigigo COMMENT '類義語・シノニム'
-
--- SPLIT --
-
-ALTER TABLE jp_fsi_catalog.houjin_eigyo.shanai_ryakugo ALTER COLUMN owner_bumon COMMENT '所管部門'
 """)
 # COMMAND ----------
 
@@ -432,7 +362,6 @@ $$
 display(spark.sql(f"""
 SELECT 'tantou_kigyo' AS t, count(*) n FROM {catalog}.{schema}.tantou_kigyo
 UNION ALL SELECT 'shodan_katsudo', count(*) FROM {catalog}.{schema}.shodan_katsudo
-UNION ALL SELECT 'shanai_ryakugo', count(*) FROM {catalog}.{schema}.shanai_ryakugo
 UNION ALL SELECT 'v_eigyo_360',    count(*) FROM {catalog}.{schema}.v_eigyo_360
 """))
 # COMMAND ----------

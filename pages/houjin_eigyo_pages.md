@@ -2,7 +2,7 @@
 
 このドキュメントは、Unity Catalog **Pages**（旧称: ビジネスグロッサリ。現在は Domains＋Pages＋Metric Views＋Certification として semantics/Discover に統合）へ投入する、法人営業ドメインの**用語・KPI・区分**の定義集です。
 
-Pages に取り込むことで、Genie / データ探索が社内用語を正しく解釈し、回答精度の天井が上がります（ハンズオン STEP2 の「Context」に対応）。本ハンズオンでは、この内容を用語集テーブル `shanai_ryakugo` ＋ Genie の Instructions として実装し、同等の効果を再現しています。
+Pages に取り込むことで、Genie / データ探索が社内用語を正しく解釈し、回答精度の天井が上がります（ハンズオン STEP2 の「Context」に対応）。用語集は **SQL テーブルとしては作成しません**（Pages を真実の源とします）。Pages が未有効の環境では、この内容を Genie の Instructions に取り込むことで同等の効果を再現できます。
 
 - **対象スキーマ**: `jp_fsi_catalog.houjin_eigyo`（環境に合わせて読み替え）
 - **Pages 投入手順**: Catalog Explorer → Discover → Domain 作成 → Pages でこのドキュメントを取り込み → Related Assets に下記テーブル/ビューを紐付け
@@ -99,7 +99,6 @@ Pages に取り込むことで、Genie / データ探索が社内用語を正し
 - `jp_fsi_catalog.houjin_eigyo.tantou_kigyo` — 担当企業プロファイル
 - `jp_fsi_catalog.houjin_eigyo.houjin_keiyaku` — 法人契約実績
 - `jp_fsi_catalog.houjin_eigyo.shodan_katsudo` — 商談活動履歴
-- `jp_fsi_catalog.houjin_eigyo.shanai_ryakugo` — 社内用語集
 - `jp_fsi_catalog.houjin_eigyo.v_eigyo_360` — 企業360°ビュー
 - `jp_fsi_catalog.houjin_eigyo.mv_eigyo_kpi` — KPIメトリックビュー
 - `jp_fsi_catalog.houjin_eigyo.shohin_master` — 商品マスタ
