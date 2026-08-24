@@ -51,7 +51,7 @@ PROFILE=<your-profile> WAREHOUSE=<warehouse_id> ./genie/create_genie_spaces.sh
 #   → 出力された space_id を台本/スライドの接続情報に反映
 ```
 
-> `sql/*.sql` は DDL のソース（真実の源）です。`notebooks/01_setup_sample_data` はこれらを `spark.sql()` で実行する形にまとめたものです。
+> `notebooks/01_setup_sample_data` が実行対象です。サンプルデータ（`tantou_kigyo` / `shodan_katsudo`）は PySpark の `createDataFrame` ＋ `saveAsTable` で作成（実データを同梱）、ビュー・メトリックビュー・コメント/制約は `spark.sql()` で作成します。`sql/*.sql` は各オブジェクトの DDL/ロジックのリファレンスです。
 
 ## Pages の投入（用語・KPI／Beta）
 
