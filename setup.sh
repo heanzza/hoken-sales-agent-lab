@@ -14,8 +14,8 @@
 set -euo pipefail
 
 PROFILE="${PROFILE:?PROFILE を指定してください (例: PROFILE=jp-fsi ./setup.sh)}"
-CATALOG="${CATALOG:-jp_fsi_catalog}"
-SCHEMA="${SCHEMA:-houjin_eigyo}"
+CATALOG="${CATALOG:-handson}"
+SCHEMA="${SCHEMA:-hoken_sales}"
 VOLUME="${VOLUME:-product_docs}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ME="$(databricks current-user me --profile "$PROFILE" -o json | python3 -c 'import json,sys;print(json.load(sys.stdin)["userName"])')"
