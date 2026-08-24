@@ -396,7 +396,7 @@
         <dt>ワークスペース</dt><dd><span class="mono">fevm-jp-fsi</span>（profile: jp-fsi）</dd>
         <dt>SQL Warehouse</dt><dd><span class="mono">Serverless Starter Warehouse / 89f4e2e932ab04ea</span></dd>
         <dt>カタログ.スキーマ</dt><dd><span class="mono">jp_fsi_catalog.houjin_eigyo</span></dd>
-        <dt>Genie Agent（本命）</dt><dd><a href="https://fevm-jp-fsi.cloud.databricks.com/genie/rooms/01f19f38c97213fbbfefeefea96ddd19" target="_blank" rel="noopener">日本生命 法人営業アシスタント</a> <span class="mono">01f19f38c97213fbbfefeefea96ddd19</span></dd>
+        <dt>Genie Agent（本命）</dt><dd><a href="https://fevm-jp-fsi.cloud.databricks.com/genie/rooms/01f19f38c97213fbbfefeefea96ddd19" target="_blank" rel="noopener">法人営業アシスタント</a> <span class="mono">01f19f38c97213fbbfefeefea96ddd19</span></dd>
         <dt>Genie【Before】対比</dt><dd><a href="https://fevm-jp-fsi.cloud.databricks.com/genie/rooms/01f19f390fc11b59906447d9a2f1701c" target="_blank" rel="noopener">用語集・文脈なし</a> <span class="mono">01f19f390fc11b59906447d9a2f1701c</span></dd>
         <dt>用語集テーブル</dt><dd><span class="mono">shanai_ryakugo</span>（社内用語25語）</dd>
         <dt>企業360ビュー</dt><dd><span class="mono">v_eigyo_360</span>（企業×契約×商談×未提案）</dd>
@@ -409,7 +409,7 @@
     <div class="card">
       <p style="margin-top:0"><b>① Knowledge Assistant を作る</b>（AI/BI → Agent Bricks → Knowledge Assistant → Create）</p>
       <dl class="kv">
-        <dt>名前</dt><dd><span class="mono">nissay_houjin_product_ka</span></dd>
+        <dt>名前</dt><dd><span class="mono">hoken_houjin_product_ka</span></dd>
         <dt>ナレッジソース</dt><dd>Volume <span class="mono">/Volumes/jp_fsi_catalog/houjin_eigyo/product_docs</span>（PDF 4件）</dd>
         <dt>説明・指示</dt><dd>「法人向け保険商品（団体定期保険・企業年金・GLTD・経営者保険）の付保基準・保障内容・保険料・税務の質問に、商品資料に基づき日本語で答える営業支援アシスタント」</dd>
         <dt>プロビジョニング</dt><dd>2〜5分で <span class="pill ok">ONLINE</span> に。</dd>
@@ -417,9 +417,9 @@
       </dl>
       <p style="margin-bottom:0"><b>② Multi-Agent Supervisor を作る</b>（AI/BI → Agent Bricks → Multi-Agent Supervisor → Create）</p>
       <dl class="kv">
-        <dt>名前</dt><dd><span class="mono">nissay_houjin_sales_supervisor</span></dd>
+        <dt>名前</dt><dd><span class="mono">hoken_houjin_sales_supervisor</span></dd>
         <dt>エージェント1（データ）</dt><dd>Genie space <span class="mono">01f19f38c97213fbbfefeefea96ddd19</span> — 「企業・契約・商談・未提案商品・KPI・社内用語の照会」</dd>
-        <dt>エージェント2（商品資料）</dt><dd>KA <span class="mono">nissay_houjin_product_ka</span> — 「商品の付保基準・保障内容・保険料・税務」</dd>
+        <dt>エージェント2（商品資料）</dt><dd>KA <span class="mono">hoken_houjin_product_ka</span> — 「商品の付保基準・保障内容・保険料・税務」</dd>
         <dt>ルーティング指示</dt><dd>企業/契約/商談/未提案/KPIは Genie、商品仕様は KA。提案作成の依頼は両者を連携（まずGenieで企業状況と未提案を取得→KAで該当商品を要約→統合）。</dd>
         <dt>動作確認</dt><dd>「九州建設株式会社向けに、未提案商品をふまえた提案の骨子を作って。付保基準も含めて」</dd>
       </dl>
@@ -475,7 +475,7 @@
 <script>
   (function(){
     var root=document.documentElement, btn=document.getElementById('tt');
-    var KEY='nissay-lab-theme';
+    var KEY='hoken-lab-theme';
     try{var s=localStorage.getItem(KEY); if(s){root.setAttribute('data-theme',s);}}catch(e){}
     function cur(){
       var a=root.getAttribute('data-theme');

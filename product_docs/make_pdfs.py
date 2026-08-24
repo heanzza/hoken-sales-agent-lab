@@ -1,5 +1,5 @@
 import os
-os.makedirs('/tmp/nissay/pdfhtml', exist_ok=True)
+os.makedirs('/tmp/hoken/pdfhtml', exist_ok=True)
 
 STYLE = """
 <style>
@@ -21,10 +21,10 @@ STYLE = """
 
 def doc(title, sub, body):
     return f"""<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8">{STYLE}</head><body>
-<div class="head"><div class="brand">日生ライフ 法人向け商品資料（架空・営業支援用サンプル）</div>
+<div class="head"><div class="brand">サンプル生命 法人向け商品資料（架空・営業支援用サンプル）</div>
 <h1>{title}</h1><div class="sub">{sub}</div></div>
 {body}
-<div class="foot">日生ライフ株式会社（架空）｜本資料は営業支援用のサンプルであり、実在の商品・企業とは関係ありません｜2026年8月版</div>
+<div class="foot">サンプル生命株式会社（架空）｜本資料は営業支援用のサンプルであり、実在の商品・企業とは関係ありません｜2026年8月版</div>
 </body></html>"""
 
 docs = {}
@@ -146,6 +146,6 @@ docs['04_経営者向け定期保険'] = doc(
 """)
 
 for name, html in docs.items():
-    with open(f'/tmp/nissay/pdfhtml/{name}.html', 'w') as f:
+    with open(f'/tmp/hoken/pdfhtml/{name}.html', 'w') as f:
         f.write(html)
     print("wrote", name)

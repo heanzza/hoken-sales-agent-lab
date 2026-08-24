@@ -53,14 +53,14 @@ PROFILE=<your-profile> WAREHOUSE=<warehouse_id> ./genie/create_genie_spaces.sh
 CLIでの作成手段がないため UI で作成します。
 
 **① Knowledge Assistant**（AI/BI → Agent Bricks → Knowledge Assistant → Create）
-- 名前: `nissay_houjin_product_ka`
+- 名前: `hoken_houjin_product_ka`
 - ナレッジソース: Volume `/Volumes/<catalog>/<schema>/product_docs`（PDF 4件）
 - 動作確認: 「団体定期保険の最低加入人数は?」→ 原則5名以上／「GLTDの免責期間は?」→ 通常30〜90日
 
 **② Multi-Agent Supervisor**（AI/BI → Agent Bricks → Multi-Agent Supervisor → Create）
-- 名前: `nissay_houjin_sales_supervisor`
+- 名前: `hoken_houjin_sales_supervisor`
 - エージェント1（データ）: Genie space（本命）
-- エージェント2（商品資料）: KA `nissay_houjin_product_ka`
+- エージェント2（商品資料）: KA `hoken_houjin_product_ka`
 - 動作確認: 「九州建設株式会社向けに、未提案商品をふまえた提案の骨子を作って。付保基準も含めて」
 
 ## Unity AI Gateway（利用・コストの可視化）
@@ -119,6 +119,6 @@ SELECT * FROM system.ai_gateway.external_model_spend ORDER BY 1 DESC LIMIT 50;
 
 ## 注記
 
-- 商品資料は架空の「日生ライフ」による営業支援用サンプルです（実在の商品・企業とは無関係）。
+- 商品資料は架空の「サンプル生命」による営業支援用サンプルです（実在の商品・企業とは無関係）。
 - 既存の `houjin_eigyo` デモ資産は変更せず、追加のみで構築する設計です。
 - SQL内のカタログ・スキーマ名（既定 `jp_fsi_catalog.houjin_eigyo`）は `setup.sh` / `create_genie_spaces.sh` が指定値へ読み替えます。
