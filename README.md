@@ -12,7 +12,7 @@
 
 | 種別 | 内容 | 作成物 |
 |---|---|---|
-| **利用データ** | 担当企業96社・商談200件・社内用語25語・企業360°ビュー・KPIメトリックビュー | `sql/*.sql` |
+| **利用データ** | 担当企業96社・商談200件・社内用語25語・企業360°ビュー・KPIメトリックビュー | `notebooks/01_setup_sample_data`（DDLソースは `sql/*.sql`） |
 | **Pages 投入内容** | 用語・KPI・区分の定義集（Unity Catalog Pages 用） | `pages/houjin_eigyo_pages.md` |
 | **Genie Agent** | キュレーション済み「法人営業アシスタント」＋対比用「Before」 | `genie/*.json` |
 | **商品資料** | 商品パンフ/約款 PDF 4件（KAのソース） | `product_docs/pdf/*.pdf` |
@@ -20,23 +20,38 @@
 
 ## 前提
 
-- Databricks CLI v0.292+（認証済みプロファイル）／`jq`／`python3`
 - **前提データ**: 法人契約ファクト `houjin_keiyaku` と マスタ `channel_master`/`shohin_master`/`shibu_master` が対象スキーマに存在すること（本ラボの企業/商談/360ビューはこれらに結合します）。無い場合は同等のダミーをご用意ください。
-- SQL Warehouse（Serverless 推奨）
+- Serverless SQL Warehouse か DBR 14.3+ のクラスター
+- （任意）ノートブック取り込み・PDFアップロードを自動化する場合: Databricks CLI v0.292+／`jq`／`python3`
 
 ## クイックスタート
 
-```bash
-# 1) 利用データ（テーブル/ビュー/用語集/Metric View）＋ 商品PDF を作成
-PROFILE=<your-profile> ./setup.sh
-#   任意: CATALOG=<catalog> SCHEMA=<schema> を上書き可（既定 jp_fsi_catalog.houjin_eigyo）
+### 1) 利用データを作成 — ノートブックを実行（標準）
 
-# 2) Genie Space を2つ作成（本命＋Before）
+Unity Catalog へのデータ投入は **セットアップ・ノートブック** で行います。
+
+- `notebooks/00_config` … カタログ/スキーマ/ボリュームを設定・作成（ウィジェットで切替可）
+- `notebooks/01_setup_sample_data` … 企業・商談・用語集・企業360°ビュー・Metric View を作成（先頭で `%run ./00_config`）
+
+**手順**: 上記2ファイルをワークスペースにインポート → `01_setup_sample_data` を開き、ウィジェットの `catalog` / `schema` を確認して **［すべて実行］**。
+
+インポートとPDFアップロードを CLI で自動化する場合:
+
+```bash
+PROFILE=<your-profile> ./setup.sh
+#   → notebooks/ をワークスペースにインポートし、商品PDFを Volume にアップロード
+#   任意: CATALOG=<catalog> SCHEMA=<schema> WORKSPACE_DIR=<path> を上書き可
+#   実行後に 01_setup_sample_data を［すべて実行］
+```
+
+### 2) Genie Space を2つ作成（本命＋Before）
+
+```bash
 PROFILE=<your-profile> WAREHOUSE=<warehouse_id> ./genie/create_genie_spaces.sh
 #   → 出力された space_id を台本/スライドの接続情報に反映
 ```
 
-`setup.sh` は `sql/` 内の各SQLを対象カタログ・スキーマに読み替えて実行し、Volume `product_docs` を作成して商品PDFをアップロードします。
+> `sql/*.sql` は DDL のソース（真実の源）です。`notebooks/01_setup_sample_data` はこれらを `spark.sql()` で実行する形にまとめたものです。
 
 ## Pages の投入（用語・KPI／Beta）
 
@@ -95,8 +110,11 @@ SELECT * FROM system.ai_gateway.external_model_spend ORDER BY 1 DESC LIMIT 50;
 
 ```
 .
-├── setup.sh                         # 利用データ作成＋PDFアップロード（メイン）
-├── sql/                             # テーブル/ビュー/用語集/Metric View
+├── notebooks/                       # ★ ワークスペースで実行するセットアップ
+│   ├── 00_config.py                 #   カタログ/スキーマ/ボリューム設定・作成
+│   └── 01_setup_sample_data.py      #   データ作成（%run ./00_config → sql/を実行）
+├── setup.sh                         # 補助: notebooks/ を取込＋PDFをVolumeへ（任意）
+├── sql/                             # DDLソース（notebooksが実行する真実の源）
 │   ├── 01_tantou_kigyo.sql          #   担当企業プロファイル（既存90+新規開拓6）
 │   ├── 02_shodan_katsudo.sql        #   商談活動履歴（社内用語をメモに埋込）
 │   ├── 03_shanai_ryakugo.sql        #   社内用語集25語
